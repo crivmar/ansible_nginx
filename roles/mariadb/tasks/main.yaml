@@ -1,0 +1,4 @@
+- name: Instalar servidor Mariadb
+  apt:
+    name: 
+      - mariadb-server
