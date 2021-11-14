@@ -6,6 +6,16 @@
 - hosts: grupo_sw
   become: true
   roles:
-   - role: apache2
+   - role: mariadb
+
+- hosts: grupo_sw
+  become: true
+  roles:
+   - role: nginx
+
+- hosts: grupo_sw
+  become: true
+  roles:
+   - role: php_fpm
   
 
