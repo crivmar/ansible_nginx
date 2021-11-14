@@ -1,0 +1,49 @@
+- name: Instalar nginx
+  apt:
+    name: 
+      - nginx
+  
+- name: Configuración de virtualhost
+  template: 
+    src: etc/nginx/sites-available/vhost.j2
+    dest: /etc/nginx/sites-available/{{item["name"]}}.conf
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - "{{virtualhosts}}"
+
+- name: Crea un documento raíz si no existe
+  ansible.builtin.file:
+    path: /{{item["datos"]["documentroot"]}}
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  with_items:
+    - "{{virtualhosts}}"
+
+
+- name: Añadir enlace simbólico del virtualhost
+  file:
+    src: /etc/nginx/sites-available/{{item["name"]}}.conf
+    dest: /etc/nginx/sites-enabled/{{item["name"]}}.conf
+    state: link
+    mode: 0755
+  with_items:
+    - "{{virtualhosts}}"
+  notify: restart nginx
+  
+
+- name: Copiar index.html
+  copy:
+    src: index_{{item["name"]}}.html
+    dest: /{{item["datos"]["documentroot"]}}/index.html
+    owner: www-data
+    group: www-data
+    mode: 0644
+  with_items:
+    - "{{virtualhosts}}"
+
+ 
+
